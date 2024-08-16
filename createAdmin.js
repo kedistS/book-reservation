@@ -9,33 +9,38 @@ mongoose.connect(config.database, { useNewUrlParser: true, useUnifiedTopology: t
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB', err));
 
-async function createAdminUser() {
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash('jk1234', salt);
-
-    const admin = new User({
-      name: 'Admin',
-      email: 'admin@example.com',
-      phoneNumber: '0901946736',
-      password: hashedPassword,
-      isAdmin: true,
-    });
-
-    await admin.save();
-    console.log('Admin user created successfully');
-
-    // Generate JWT token
-    const payload = { user: { id: admin.id } };
-    const token = jwt.sign(payload, config.secret, { expiresIn: '1h' });
-
-    console.log('Admin token:', token);
-
-    mongoose.connection.close();
-  } catch (err) {
-    console.error(err.message);
-    mongoose.connection.close();
+  async function updateAdminUser() {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('jk1234', salt);
+  
+      const updatedAdmin = await User.findOneAndUpdate(
+        { email: 'admin@example.com' },
+        {
+          $set: {
+            name: 'Admin',
+            phoneNumber: '0901946736',
+            password: hashedPassword,
+            isAdmin: true,
+          }
+        },
+        { new: true, upsert: true }
+      );
+  
+      console.log('Admin user updated successfully');
+      console.log(updatedAdmin);
+  
+      // Generate JWT token
+      const payload = { user: { id: updatedAdmin.id } };
+      const token = jwt.sign(payload, config.secret, { expiresIn: '1h' });
+  
+      console.log('Admin token:', token);
+  
+      mongoose.connection.close();
+    } catch (err) {
+      console.error(err.message);
+      mongoose.connection.close();
+    }
   }
-}
-
-createAdminUser();
+  
+  updateAdminUser();

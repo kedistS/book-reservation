@@ -25,23 +25,28 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    let user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+    try {
+      const { email, password } = req.body;
+      let user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+      const payload = { 
+        user: { 
+          id: user.id,
+          isAdmin: user.isAdmin  // Include isAdmin in the payload
+        } 
+      };
+      jwt.sign(payload, config.secret, { expiresIn: '1h' }, (err, token) => {
+        if (err) throw err;
+        res.json({ token, isAdmin: user.isAdmin });  // Return isAdmin status to client
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
     }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-    const payload = { user: { id: user.id } };
-    jwt.sign(payload, config.secret, { expiresIn: '1h' }, (err, token) => {
-      if (err) throw err;
-      res.json({ token });
-    });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-};
+  };
