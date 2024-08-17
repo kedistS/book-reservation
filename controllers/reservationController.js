@@ -2,25 +2,25 @@ const Reservation = require('../models/Reservation');
 const Book = require('../models/Book');
 
 exports.createReservation = async (req, res) => {
-  try {
-    const { bookId, startDate, endDate } = req.body;
-    const book = await Book.findById(bookId);
-    if (!book) {
-      return res.status(404).json({ message: 'Book not found' });
+    try {
+      const { bookId } = req.body;
+      const book = await Book.findById(bookId);
+      if (!book) {
+        return res.status(404).json({ message: 'Book not found' });
+      }
+      const newReservation = new Reservation({
+        user: req.user.id,
+        book: bookId,
+        startDate: new Date(), // Set to current date
+        status: 'pending' // Set initial status to pending
+      });
+      const reservation = await newReservation.save();
+      res.json(reservation);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
     }
-    const newReservation = new Reservation({
-      user: req.user.id,
-      book: bookId,
-      startDate,
-      endDate
-    });
-    const reservation = await newReservation.save();
-    res.json(reservation);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-};
+  };
 
 exports.getReservations = async (req, res) => {
   try {
@@ -49,17 +49,29 @@ exports.getReservation = async (req, res) => {
 };
 
 exports.updateReservationStatus = async (req, res) => {
-  try {
-    const { status } = req.body;
-    const reservation = await Reservation.findById(req.params.id);
-    if (!reservation) {
-      return res.status(404).json({ message: 'Reservation not found' });
+    try {
+      const { status } = req.body;
+      const reservation = await Reservation.findById(req.params.id);
+      if (!reservation) {
+        return res.status(404).json({ message: 'Reservation not found' });
+      }
+      
+      reservation.status = status;
+      
+      if (status === 'approved') {
+        const approvalDate = new Date();
+        reservation.startDate = approvalDate;
+        
+        // Set end date to 2 days after approval
+        const endDate = new Date(approvalDate);
+        endDate.setDate(endDate.getDate() + 2);
+        reservation.endDate = endDate;
+      }
+      
+      await reservation.save();
+      res.json(reservation);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
     }
-    reservation.status = status;
-    await reservation.save();
-    res.json(reservation);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-};
+  };
