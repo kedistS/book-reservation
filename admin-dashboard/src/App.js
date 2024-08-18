@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import Books from "./components/Books";
 import Reservations from "./components/Reservations";
-import UserManagement from "./components/UserManagement"; // Import the UserManagement component
+import UserManagement from "./components/Users"; // Import the UserManagement component
 import Login from "./components/Login";
 import PrivateRoute from "./components/PrivateRoute";
 
