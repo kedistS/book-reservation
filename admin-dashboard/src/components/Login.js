@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import axiosWithAuth from '../utils/axiosWithAuth';
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import axiosWithAuth from "../utils/axiosWithAuth";
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -12,13 +12,16 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosWithAuth.post('/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token);
-      const from = location.state?.from?.pathname || '/';
+      const response = await axiosWithAuth.post("/auth/login", {
+        email,
+        password,
+      });
+      localStorage.setItem("token", response.data.token);
+      const from = location.state?.from?.pathname || "/";
       navigate(from, { replace: true });
     } catch (error) {
-      console.error('Login failed:', error);
-      setError('Invalid email or password. Please try again.');
+      console.error("Login failed:", error);
+      setError("Invalid email or password. Please try again.");
     }
   };
 
@@ -34,7 +37,9 @@ function Login() {
           <input type="hidden" name="remember" value="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email-address" className="sr-only">Email address</label>
+              <label htmlFor="email-address" className="sr-only">
+                Email address
+              </label>
               <input
                 id="email-address"
                 name="email"
@@ -48,7 +53,9 @@ function Login() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">Password</label>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
               <input
                 id="password"
                 name="password"
@@ -63,9 +70,7 @@ function Login() {
             </div>
           </div>
 
-          {error && (
-            <div className="text-red-500 text-sm">{error}</div>
-          )}
+          {error && <div className="text-red-500 text-sm">{error}</div>}
 
           <div>
             <button

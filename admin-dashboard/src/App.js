@@ -1,29 +1,29 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
-import Books from './components/Books';
-import Reservations from './components/Reservations';
-import Users from './components/Users';
-import Login from './components/Login';
-import PrivateRoute from './components/PrivateRoute';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import Dashboard from "./components/Dashboard";
+import Books from "./components/Books";
+import Reservations from "./components/Reservations";
+import UserManagement from "./components/UserManagement"; // Import the UserManagement component
+import Login from "./components/Login";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.location = '/login';
+    localStorage.removeItem("token");
+    window.location = "/login";
   };
 
   return (
     <Router>
-      <div className="bg-red-500 p-4 text-white">Tailwind is working!</div>
-
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <nav className="bg-white shadow-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
               <div className="flex">
                 <div className="flex-shrink-0 flex items-center">
-                  <span className="text-2xl font-bold text-indigo-600">Admin Dashboard</span>
+                  <span className="text-2xl font-bold text-indigo-600">
+                    Admin Dashboard
+                  </span>
                 </div>
                 <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                   <NavLink to="/">Dashboard</NavLink>
@@ -49,10 +49,38 @@ function App() {
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
               <div className="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <Routes>
-                  <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-                  <Route path="/books" element={<PrivateRoute><Books /></PrivateRoute>} />
-                  <Route path="/reservations" element={<PrivateRoute><Reservations /></PrivateRoute>} />
-                  <Route path="/users" element={<PrivateRoute><Users /></PrivateRoute>} />
+                  <Route
+                    path="/"
+                    element={
+                      <PrivateRoute>
+                        <Dashboard />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/books"
+                    element={
+                      <PrivateRoute>
+                        <Books />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/reservations"
+                    element={
+                      <PrivateRoute>
+                        <Reservations />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/users"
+                    element={
+                      <PrivateRoute>
+                        <UserManagement /> {/* Use UserManagement here */}
+                      </PrivateRoute>
+                    }
+                  />
                   <Route path="/login" element={<Login />} />
                 </Routes>
               </div>
